@@ -4,16 +4,8 @@ class Mover {
  PVector acceleration;
  float mass;
  ArrayList<PVector> path;
- boolean exploded;
-
-Mover(float m, float x , float y) {
-  location = new PVector(x, y);
-  velocity = new PVector(0,0);
-  acceleration = new PVector(0,0);
-  mass = m;
-  path = new ArrayList<PVector>();
-  exploded = false;
-}
+ boolean exploded = false;
+ boolean getPath = true;
 
 Mover(float m, float x , float y, PVector initialVel) {
   location = new PVector(x, y);
@@ -21,7 +13,6 @@ Mover(float m, float x , float y, PVector initialVel) {
   acceleration = new PVector(0,0);
   mass = m;
   path = new ArrayList<PVector>();
-  exploded = false;
 }
 
  void applyForce(PVector force) {
@@ -33,7 +24,7 @@ Mover(float m, float x , float y, PVector initialVel) {
    velocity.add(acceleration);
    location.add(velocity);
    acceleration.mult(0);
-  if(!exploded) {
+  if(!exploded || !getPath) {
     path.add(new PVector(location.x, location.y));
   }
  }
@@ -58,6 +49,5 @@ Mover(float m, float x , float y, PVector initialVel) {
           }
         }
   }
-
-
+  
 }

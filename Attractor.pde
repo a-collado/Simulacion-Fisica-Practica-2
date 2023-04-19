@@ -1,11 +1,13 @@
 class Attractor {
   float mass;
+  float radius;
   PVector location;
   float G;
   
   Attractor(float m) {
     location = new PVector(width/2,height/2);
     mass = m;
+    radius = mass*2;
     G = 0.4;
   }
   
@@ -24,6 +26,6 @@ class Attractor {
   void display() {
     stroke(0);
     fill(175,200);
-    ellipse(location.x,location.y,mass*2,mass*2);
+    circle(location.x,location.y,radius);
   }
 }
