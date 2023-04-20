@@ -50,14 +50,6 @@ void setup(){
 void draw(){
   background(255);
   
-  PVector f = a.attract(m);
-  m.applyForce(f);
-  m.update();
-  m.explode(a.location);
-  
-  a.display();
-  m.display();
-  
   switch(exercise){
     case 'A': 
     exerciseA();
@@ -77,10 +69,18 @@ void draw(){
 
 void exerciseA(){
 
+  PVector f = a.attract(m);
+  m.applyForce(f);
+  m.update();
+  m.explode(a.location);
+  
+  a.display();
+  m.display();
 }
 
 void exerciseB(){
- 
+  exerciseA();
+
   float d = dist(m.location.x, m.location.y, a.location.x, a.location.y);
   if (d > rMax) {
     rMax = d;
@@ -99,7 +99,8 @@ void exerciseB(){
 }
 
 void exerciseC(){
- 
+  exerciseA();
+
   if(!complete){
     t = millis() - t0; // tiempo transcurrido
     PVector position = m.location.copy();
@@ -162,7 +163,7 @@ void exerciseC(){
 }
 
 void exerciseD(){
-  
+  exerciseA();
 }
 
 void keyPressed() {
