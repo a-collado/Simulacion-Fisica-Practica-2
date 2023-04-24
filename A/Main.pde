@@ -25,11 +25,12 @@ int[] colors;
 
 void setup(){
   size(640,360);
-  exercise = 'D';
+  exercise = 'C';
   a = new Attractor(25);
-  m = new Mover(1, width/2+100,height/2, new PVector(0.3,0.05));
+  m = new Mover(1, 250, 70, new PVector(0.3,0.05));
   if (exercise == 'D'){
     // Hay que preguntar si la localizacion inicial tiene que ser perpendicular
+    m.location = new PVector(width/2+100,height/2);
     m.velocity = new PVector (0,sqrt(a.G * a.mass / dist(m.location.x, m.location.y, a.location.x, a.location.y)));
   }
 
