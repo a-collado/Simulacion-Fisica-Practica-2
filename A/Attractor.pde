@@ -21,7 +21,7 @@ class Attractor {
     force.mult(strength);
 
     return force;
- }
+  }
   
   void display() {
     stroke(0);

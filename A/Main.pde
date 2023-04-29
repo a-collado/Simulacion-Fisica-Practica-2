@@ -1,25 +1,26 @@
  Mover m;
  Attractor a;
- char exercise;
+ char exercise;   // Que ejericio se va a ejecutar
  
  // Ejercicio 'B'
- float rMax;
- float rMin;
+ float rMax;          // Radio maximo de la orbita.
+ float rMin;          // Radio minimo del a orbita.
  
  // Ejercicio 'C'
- float t;
- float t0;
+ float time;          // Tiempo actual en milisegundos.
+ float time_ini;      // Tiempo en el instante inicial de la ejecucion del programa en milisegundos.
  PVector initialPos;
+ // Booleans para marcar diferentes estados.
  boolean complete = false;
  boolean enter = false;
  boolean calculated = false;
  
-int areaTime = 70;
-int areas;
-int[][] points;
-float[] areaTrapecio;
-float[] areaSimpson;
-int[] colors;
+int areaTime = 70;    // Cuantas poisiciones (puntos en la lista 'path') utilizaremos para calcular el area.
+int areas;            // Cuantas areas se van a calcular.
+int[][] points;       // Los puntos de la orbita con los que vamos a calular cada area.
+float[] areaTrapecio; // Todas las areas calculadas con el metodo del trapecio.
+float[] areaSimpson;  // Todas las areas calculadas con el metodo Simpson.
+int[] colors;         // Esta por ahora no se sta usando.
  
  // Ejercicio 'D'
 
@@ -29,22 +30,22 @@ void setup(){
   a = new Attractor(25);
   m = new Mover(1, 250, 70, new PVector(0.3,0.05));
   if (exercise == 'D'){
-    // Hay que preguntar si la localizacion inicial tiene que ser perpendicular
     m.location = new PVector(width/2+100,height/2);
     m.velocity = new PVector (0,sqrt(a.G * a.mass / dist(m.location.x, m.location.y, a.location.x, a.location.y)));
   }
 
-
-  
-  rMax = 0.0;
+  // Ponemos el valor más bajo y más alto posible.
+  rMax = 0.0;         
   rMin = 999.0;
     
-  t0 = millis(); // momento actual
+  time_ini = millis();      // Momento actual en miliseungos.
   initialPos = m.location.copy();
-  areas = int(random(2,5));
+  areas = int(random(1,4)); // Se calculara un numero aleatorio de areas entre 2 y 4.
   areaTrapecio = new float[areas];
   areaSimpson = new float[areas];
   points = new int[areas][2];
+
+  frameRate(600);         // Aumentamos el framerate para que la orbita se complete antes.
   
 }
 
@@ -82,20 +83,19 @@ void exerciseA(){
 void exerciseB(){
   exerciseA();
 
-  float d = dist(m.location.x, m.location.y, a.location.x, a.location.y);
-  if (d > rMax) {
+  float d = dist(m.location.x, m.location.y, a.location.x, a.location.y); // Calculamos la distancia entre el Attractor y el Mover.
+  if (d > rMax) {                                                         // Guardamos la distancia minima y maxima.
     rMax = d;
   }
   if (d < rMin) {
     rMin = d;
-  }
-  
-  float e = (rMax - rMin) / (rMax + rMin);
+  }                                 
+
+  float e = (rMax - rMin) / (rMax + rMin);                                // Calculamos la excentricidad y lo mostramos todo por pantlla.
   fill(0);
   text("Radi màxim: " + int(rMax) + "px", 10, 20 );
   text("Radi mínim: " + int(rMin) + "px", 10, 40);
   text("Excentricitad: " + e, 10, 60);
-
 
 }
 
@@ -103,11 +103,11 @@ void exerciseC(){
   exerciseA();
 
   if(!complete){
-    t = millis() - t0; // tiempo transcurrido
+    time = millis() - time_ini;                                           // Calculamos el tiempo transcurrido desde que se ha iniciado el programa
     PVector position = m.location.copy();
     // Si el Mover ha completado una vuelta
-    if (t > 100 && int(initialPos.x) == int(position.x) && int(initialPos.y) == int(position.y)){
-      // Mostrar mensaje para calcular áreas
+    if (time > 100 && int(initialPos.x) == int(position.x) && int(initialPos.y) == int(position.y)){
+    // Marcamos la orbita como completada y dejamos de guardar los puntos de la orbita.
       complete = true;
       m.getPath = false;
     }
@@ -120,11 +120,14 @@ void exerciseC(){
       for(int i = 0; i < areas; i++){
       // Obtener dos índices aleatorios
       if (i == 0){
-        points[i][0] = int(random(m.path.size()/4));
+        points[i][0] = int(random(m.path.size()/4));                        // Dividimos el total entre 4 para asegurar que la primera area estara en el primer cuarto de la orbita.
       } else {
         points[i][0] = int(random(points[i-1][1], m.path.size() - areaTime ));
       }
       points[i][1] = points[i][0] + areaTime;
+
+      // Nos aseguramos que el area que vayamos a calcular este dentro de la orbita.
+      //TODO: Creo que aqui hay un bug que hace que a veces haya 2 areas iguales.
       if (points[i][1] > m.path.size()) {
         points[i][1] = m.path.size() - 1;
         points[i][0] = points[i][1] - areaTime;
@@ -132,7 +135,8 @@ void exerciseC(){
       
       // Calcular la distancia entre los dos puntos
       float dist = m.path.get(points[i][1]).dist(m.path.get(points[i][0]));
-      
+      // TODO: Creo que las formulas estan mal. Hay que buscar las formulas correctas.
+
       // Calcular el área usando el método del trapecio
       areaTrapecio[i] = dist * (m.path.get(points[i][1]).y + m.path.get(points[i][0]).y) / 2;
       
@@ -151,25 +155,23 @@ void exerciseC(){
        text(areaSimpson[i], 150, 60 + 20 * i);
       
       stroke(255, 0, 0);
-      
+      // Dibujamos las areas que hemos calculado.
       for (int e = points[i][0]; e < points[i][1]; e++){
         line(a.location.x, a.location.y, m.path.get(e).x, m.path.get(e).y);
       }
     }
   }
-  
-  
-  
-  
 }
 
 void exerciseD(){
   exerciseA();
+
+  // Los calculos importantes para el ejercicio D se han hecho dentro de un if en la funcion setup().
 }
 
 void keyPressed() {
   if (keyCode == ENTER) {
-      if (complete){
+      if (complete){                  // Solo se calcularan las areas si ya se ha completado la orbita.
         enter = true;
       }
   } 
