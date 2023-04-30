@@ -34,14 +34,6 @@ void setup(){
 void draw(){
   background(255);
 
-  // Dibujar trayectoria analítica
-  stroke(0, 0, 255);
-  noFill();
-  for (PVector p : analyticalPath) {
-    point(p.x, screen_height - p.y);
-  }
-
-
   // Simulación numérica
 
   // Calcular nueva posición y velocidad
@@ -51,6 +43,21 @@ void draw(){
   m.update();                                     // El calculo de la velocidad utilizando la aceleracion se esta haciendo en la funcion update del Mover.     
   m.display();       
   
+  
+  // Dibujar trayectoria analítica
+  /*stroke(0, 0, 255);
+  noFill();
+  for (PVector p : analyticalPath) {
+    point(p.x, screen_height - p.y);
+  }*/
+  stroke(127);
+  strokeWeight(5);
+  strokeCap(ROUND);
+  for(int i = 0; i < analyticalPath.size(); i = i + 30) { 
+    if (m.location.x > analyticalPath.get(i).x) {
+      point(analyticalPath.get(i).x, screen_height - analyticalPath.get(i).y);
+    }
+  }
 
   fill(0);
   text("Angle de llançament: " +  round(degrees(angle)) + " graus", 10, 20 );
