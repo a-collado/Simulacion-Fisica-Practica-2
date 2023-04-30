@@ -35,7 +35,7 @@ void setup(){
   }
 
   // Ponemos el valor más bajo y más alto posible.
-  rMax = 0.0;         
+  rMax = 0.0;
   rMin = 999.0;
     
   time_ini = millis();      // Momento actual en miliseungos.

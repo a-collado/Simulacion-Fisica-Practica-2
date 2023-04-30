@@ -1,42 +1,59 @@
  Mover m;
+ int screen_height = 360;
 
- // Guardamos todos los valores para poder usarlos en el metodo analitico y en el numerico.
- float mass = 1;                 // Masa del Mover.
- float x = 50;                // Posicion inicial en X
- float y = 300;               // Posicion inicial en Y
- float vx = 50;               // Velocidad inicial en X
- float vy = -60;              // Velocidad inicial en Y
- float g = 9.81;              // Aceleracion de la gravedad
+float angle = radians(70); // Ángulo de lanzamiento
+float v0 = 70; // Velocidad inicial
+float v0x = v0 * cos(angle);
+float v0y = v0 * sin(angle);
+float g = 9.81; // Aceleración gravitatoria
+float mass = 1;
+
+ArrayList<PVector> analyticalPath = new ArrayList<PVector>(); // Trayectoria analítica
+
+float x = 20, y = 300; // Posición inicial
+float tMax = v0 * sin(angle) + sqrt((v0*sin(angle)) + 2 * g * (screen_height - y)) / g; // Tiempo que pasara la bola en el aire.
+float dt = 0.01; // Incremento de tiempo para calcular la solicon analitica
 
 void setup(){
   size(640,360);
-
   // Inicializamos el mover con los valores que hemos designado.
-  m = new Mover(mass, x, y, new PVector(vx,vy));
-
+  m = new Mover(mass, x, y, new PVector(v0x, -v0y));    // La vy0 la invertimos para que la velocidad apunte hacia arriba en Processing
   frameRate(20);         // Relentizamos el framerate para poder ver bien el lanzamiento.
+
+  // Solucion analítica
+  for (float t = 0; t <= tMax; t += dt) {
+    // Utilizamos la formula del desplazamiento para calcular la posicion en cada momento del tiempo
+    float x_analityc = x + v0 * cos(angle) * t;
+    float y_analityc = (screen_height - y) + v0 * sin(angle) * t - g/2 * pow(t, 2);   // Restamos screen height - y porque en el sistema de coordenadas que usa processing, el punto más alto de la pantalla es el 0.
+    analyticalPath.add(new PVector(x_analityc, y_analityc));
+  }
+
 
 }
 
 void draw(){
   background(255);
-  
-  // Solucion analitica:
-  stroke(0);
-  beginShape();
-  // Hay que comprobar que estos calculos estan hechos con la formula que nos pide el profe.
-  for (float i = 0; i <= 2 * vx / g; i += 0.1) {
-    float x_analytic = vx * i;
-    float y_analytic = vy * i + g/2 * i * i;
-    vertex(x_analytic, y_analytic);
+
+  // Dibujar trayectoria analítica
+  stroke(0, 0, 255);
+  noFill();
+  for (PVector p : analyticalPath) {
+    point(p.x, screen_height - p.y);
   }
-  endShape();
+
+
+  // Simulación numérica
+
+  // Calcular nueva posición y velocidad
   
-  // Solucion numerica:
-  PVector gravity = new PVector(0, g);
-  m.applyForce(gravity);  
-  m.update();             
-  m.display();            
+  PVector fuerza_acelaracion = new PVector(0, g).mult(m.mass);  // Calculamos la fuerza de la aceleracion.
+  m.applyForce(fuerza_acelaracion);                             // Usamos la segunda ley de Newton para calcular la acelaracion en la funcion applyForce.
+  m.update();                                     // El calculo de la velocidad utilizando la aceleracion se esta haciendo en la funcion update del Mover.     
+  m.display();       
   
+
+  fill(0);
+  text("Angle de llançament: " +  round(degrees(angle)) + " graus", 10, 20 );
+  text("Velocitat inicial : " + int(v0) + " px/s", 10, 40);
 
 }
