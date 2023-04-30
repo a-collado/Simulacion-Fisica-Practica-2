@@ -21,6 +21,8 @@ int[][] points;       // Los puntos de la orbita con los que vamos a calular cad
 float[] areaTrapecio; // Todas las areas calculadas con el metodo del trapecio.
 float[] areaSimpson;  // Todas las areas calculadas con el metodo Simpson.
 int[] colors;         // Esta por ahora no se sta usando.
+
+int sections = 20; // number of sections to divide the path
  
  // Ejercicio 'D'
 
@@ -40,10 +42,10 @@ void setup(){
     
   time_ini = millis();      // Momento actual en miliseungos.
   initialPos = m.location.copy();
-  areas = int(random(1,4)); // Se calculara un numero aleatorio de areas entre 2 y 4.
+  areas = int(random(2,6)); // Se calculara un numero aleatorio de areas entre 2 y 4.
+  points = new int[areas][2];
   areaTrapecio = new float[areas];
   areaSimpson = new float[areas];
-  points = new int[areas][2];
 
   frameRate(600);         // Aumentamos el framerate para que la orbita se complete antes.
   
@@ -114,25 +116,33 @@ void exerciseC(){
   }else if (!enter){
     text("Presiona Enter para calcular áreas.", 10, 40);
   }
+
+
   
   if (enter){
     if (!calculated){
-      for(int i = 0; i < areas; i++){
-      // Obtener dos índices aleatorios
-      if (i == 0){
-        points[i][0] = int(random(m.path.size()/4));                        // Dividimos el total entre 4 para asegurar que la primera area estara en el primer cuarto de la orbita.
-      } else {
-        points[i][0] = int(random(points[i-1][1], m.path.size() - areaTime ));
-      }
-      points[i][1] = points[i][0] + areaTime;
-
-      // Nos aseguramos que el area que vayamos a calcular este dentro de la orbita.
-      //TODO: Creo que aqui hay un bug que hace que a veces haya 2 areas iguales.
-      if (points[i][1] > m.path.size()) {
-        points[i][1] = m.path.size() - 1;
-        points[i][0] = points[i][1] - areaTime;
-      }
+      int sectionLength = m.path.size() / sections; // length of each section
       
+      int[][] indexes = new int[sections][2];
+      for (int i = 0; i < sections; i++) {
+        indexes[i][0] = i * sectionLength; // start index of the section
+        indexes[i][1] = (i + 1) * sectionLength - 1; // end index of the section
+      }
+
+      int previousNumber = -1;
+      int count = 0;
+      int[] numbersSelected = new int[areas];
+      while (count < areas) {
+        int randomNumber = int(random(0,sections));
+        if (randomNumber != previousNumber && !isIn(numbersSelected, randomNumber) ) {
+          points[count] = indexes[randomNumber];
+          previousNumber = randomNumber;
+          numbersSelected[count] = randomNumber;
+          count++;
+        }
+      }
+
+      for(int i = 0; i < points.length; i++){
       // Calcular la distancia entre los dos puntos
       float dist = m.path.get(points[i][1]).dist(m.path.get(points[i][0]));
       // TODO: Creo que las formulas estan mal. Hay que buscar las formulas correctas.
@@ -141,8 +151,9 @@ void exerciseC(){
       areaTrapecio[i] = dist * (m.path.get(points[i][1]).y + m.path.get(points[i][0]).y) / 2;
       
       // Calcular el área usando el método de Simpson
-      areaSimpson[i] = dist / 6 * (m.path.get(points[i][0]).y + 4 * m.path.get((points[i][0] + points[i][1]) / 2).y + m.path.get(points[i][1]).y);
-
+      //areaSimpson[i] = dist / 6 * (m.path.get(points[i][0]).y + 4 * m.path.get((points[i][0] + points[i][1]) / 2).y + m.path.get(points[i][1]).y);
+      float dx = (m.path.get(points[i][1]).x - m.path.get(points[i][0]).x) / 10;
+      areaSimpson[i] = simpsonArea(m.path.get(points[i][0]), m.path.get(points[i][1]), a.location, dx);
 
       }
       calculated = true;
@@ -151,14 +162,16 @@ void exerciseC(){
     text("Método de Simpson: ", 150, 40);
     for(int i = 0; i < areas; i++){
       // Mostrar los resultados
-       text(areaTrapecio[i], 10, 60 + 20 * i);
-       text(areaSimpson[i], 150, 60 + 20 * i);
-      
+      text(areaTrapecio[i], 10, 60 + 20 * i);
+      text(areaSimpson[i], 150, 60 + 20 * i);
       stroke(255, 0, 0);
       // Dibujamos las areas que hemos calculado.
       for (int e = points[i][0]; e < points[i][1]; e++){
         line(a.location.x, a.location.y, m.path.get(e).x, m.path.get(e).y);
       }
+      
+      circle(m.path.get(points[i][0]).x, m.path.get(points[i][0]).y, 10.0f);
+      circle(m.path.get(points[i][1]).x, m.path.get(points[i][1]).y, 10.0f);
     }
   }
 }
@@ -176,3 +189,35 @@ void keyPressed() {
       }
   } 
 }
+
+float simpsonArea(PVector p1, PVector p2, PVector c, float dx) {
+  float sum = 0;
+  for (float x = p1.x + dx; x < p2.x; x += dx) {
+    PVector p = new PVector(x, -x*x/100);
+    float area = dx/3 * (distance(c, p1) + 4*distance(c, p) + distance(c, p2));
+    sum += area;
+  }
+  return sum;
+}
+
+float distance(PVector p1, PVector p2) {
+  return p1.dist(p2);
+}
+
+boolean isIn(int[] array, int value) {
+  for (int i = 0; i < array.length; i++) {
+    if (array[i] == value) {
+      return true;
+    } 
+    if (array[i] == value + 1) {
+      return true;
+    } 
+
+    if (array[i] == value - 1) {
+      return true;
+    } 
+  }
+  return false;
+}
+
+
