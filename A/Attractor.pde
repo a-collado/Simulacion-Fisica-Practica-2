@@ -24,8 +24,13 @@ class Attractor {
   }
   
   void display() {
-    stroke(0);
+    /*stroke(0);
     fill(175,200);
-    circle(location.x,location.y,radius);
+    circle(location.x,location.y,radius);*/
+   
+   // Imagen tierra
+     PImage img;
+     img = loadImage("tierra.png");
+     image(img, location.x - 25, location.y - 24, mass*2, mass*2);
   }
 }
