@@ -34,12 +34,17 @@ Mover(float m, float x , float y, PVector initialVel) {
  
  void display() {
    
+   // Mostramos como una linea algunos de los puntos guardados en path
+    stroke(127);
+    strokeWeight(5);
+    strokeCap(ROUND);
+    for(int i = 1; i < path.size(); i = i + 15) { 
+      line(path.get(i-1).x, path.get(i-1).y, path.get(i).x, path.get(i).y);
+    }
+    
    // La imagen del satelite varia en funcion de si hay colision
    PImage img;
-   if(!exploded) { 
-     /*stroke(0);
-     fill(175);
-     ellipse(location.x,location.y,mass*16,mass*16);*/
+   if(!exploded) {
      img = loadImage("sate.png");
      image(img, location.x - 5, location.y - 12, mass * 22, mass * 22);
    
@@ -47,13 +52,6 @@ Mover(float m, float x , float y, PVector initialVel) {
      img = loadImage("explo.png");
      image(img, location.x - 15, location.y - 15, mass * 35, mass * 35);
    }
-    
-    stroke(0);
-    strokeWeight(5);
-    strokeCap(ROUND);
-    for(int i = 1; i < path.size(); i = i + 15) { // Mostramos como una linea algunos de los puntos guardados en path
-      line(path.get(i-1).x, path.get(i-1).y, path.get(i).x, path.get(i).y);
-    }
     
   }
 

@@ -114,6 +114,7 @@ void exerciseC(){
       m.getPath = false;
     }
   }else if (!enter){
+    fill(0,0,0);
     text("Presiona Enter para calcular áreas.", 10, 40);
   }
 
@@ -146,7 +147,7 @@ void exerciseC(){
       // Calcular la distancia entre los dos puntos
       float dist = m.path.get(points[i][1]).dist(m.path.get(points[i][0]));
       // TODO: Creo que las formulas estan mal. Hay que buscar las formulas correctas.
-
+      
       // Calcular el área usando el método del trapecio
       areaTrapecio[i] = dist * (m.path.get(points[i][1]).y + m.path.get(points[i][0]).y) / 2;
       
@@ -158,20 +159,24 @@ void exerciseC(){
       }
       calculated = true;
     }
+    
     text("Método del trapecio: ", 10, 40);
     text("Método de Simpson: ", 150, 40);
     for(int i = 0; i < areas; i++){
-      // Mostrar los resultados
-      text(areaTrapecio[i], 10, 60 + 20 * i);
-      text(areaSimpson[i], 150, 60 + 20 * i);
-      stroke(255, 0, 0);
       // Dibujamos las areas que hemos calculado.
       for (int e = points[i][0]; e < points[i][1]; e++){
+        stroke(255, 153, 153); 
         line(a.location.x, a.location.y, m.path.get(e).x, m.path.get(e).y);
       }
       
       circle(m.path.get(points[i][0]).x, m.path.get(points[i][0]).y, 10.0f);
       circle(m.path.get(points[i][1]).x, m.path.get(points[i][1]).y, 10.0f);
+    }
+    
+    for(int i = 0; i < areas; i++){
+      // Mostrar los resultados
+      text(areaTrapecio[i], 10, 60 + 20 * i);
+      text(areaSimpson[i], 150, 60 + 20 * i);
     }
   }
 }
@@ -219,5 +224,3 @@ boolean isIn(int[] array, int value) {
   }
   return false;
 }
-
-
