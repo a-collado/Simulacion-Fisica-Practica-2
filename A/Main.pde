@@ -130,6 +130,8 @@ void exerciseC(){
         indexes[i][1] = (i + 1) * sectionLength - 1; // end index of the section
       }
 
+      // Dividimos toda la orbita en fragmentos iguales, y luego elegimos un numero aleatorio de estos fragmentos para calcular el area.
+      // Los fragmentos que se elijan nunca seran consecutuvos.
       int previousNumber = -1;
       int count = 0;
       int[] numbersSelected = new int[areas];
@@ -196,30 +198,25 @@ float trapezoidArea(int p1Index, int p2Index) {
   PVector c = a.location.copy();
   int secciones = 10;
 
+  //Aqui nos guardaremos las diferentes secciones de la figura.
   PVector[] a = new PVector[secciones+1];
   a[0] = p1;
-    PVector[] b = new PVector[secciones+1];
+  PVector[] b = new PVector[secciones+1];
   b[0] = p2;
   
+  // Dividimos en secciones la figura
   for (int i = 1; i <= secciones; i++) {
     // Calcular el punto intermedio
-    float t1 = (float) i / (float) secciones; // Calcular el valor de t
+    float t1 = (float) i / (float) secciones; // Calcular el valor de t para separar las secciones.
     a[i] = PVector.lerp(p1, c, t1); // Calcular el punto intermedio usando la función lerp
     float t2 = (float) i / (float) secciones; 
-    b[i] = PVector.lerp(p2, c, t2); // Calcular el punto intermedio usando la función lerp
+    b[i] = PVector.lerp(p2, c, t2); 
 
-    //float t = a[i-1].dist(a[i])/2;
+    // Calculamos el punto medio de cada seccion.
     PVector midA = PVector.lerp(a[i-1], a[i], 0.5);
-    //ellipse(midA.x, midA.y, 1, 1);
     PVector midB = PVector.lerp(b[i-1], b[i], 0.5);
-    //ellipse(midB.x, midB.y, 1, 1);
 
-    /*
-    float baseA = a[i-1].dist(a[i]);
-    float baseB = b[i-1].dist(b[i]);
-    float h = midA.dist(midB);
-    */
-
+    // Utilizamos la formula del Area del trapezio.
     float h = a[i-1].dist(a[i]);
     float baseA = a[i-1].dist(b[i-1]);
     float baseB = a[i].dist(b[i]);
@@ -239,6 +236,7 @@ float simpsonArea(int p1Index, int p2Index) {
   PVector c = a.location.copy();
   int secciones = 6;
 
+  //Aqui nos guardaremos las diferentes secciones de la figura.
   PVector[] a = new PVector[secciones+1];
   a[0] = p1;
     PVector[] b = new PVector[secciones+1];
@@ -246,14 +244,16 @@ float simpsonArea(int p1Index, int p2Index) {
   
   for (int i = 1; i <= secciones; i++) {
     // Calcular el punto intermedio
-    float t1 = (float) i / (float) secciones; // Calcular el valor de t
+    float t1 = (float) i / (float) secciones; // Calcular el valor de t para separar las secciones.
     a[i] = PVector.lerp(p1, c, t1); // Calcular el punto intermedio usando la función lerp
     float t2 = (float) i / (float) secciones; 
-    b[i] = PVector.lerp(p2, c, t2); // Calcular el punto intermedio usando la función lerp
+    b[i] = PVector.lerp(p2, c, t2); 
 
+    // Calculamos el punto medio de cada seccion.
     PVector midA = PVector.lerp(a[i-1], a[i], 0.5);
     PVector midB = PVector.lerp(b[i-1], b[i], 0.5);
 
+    // Utilizamos la regla de Simpson para calcular el area.
     float h = a[i-1].dist(midA);
     float df = a[i-1].dist(b[i-1]);
     float dm = midA.dist(midB);
@@ -264,7 +264,9 @@ float simpsonArea(int p1Index, int p2Index) {
 
   return area;
 }
-void pruebas(int p1Index, int p2Index)
+
+// Esta funcion se ha usado para comprobar que se estaban haciendo bien los diferentes segmentos.
+void printSegments(int p1Index, int p2Index)
 {
   PVector p1 = m.path.get(p1Index).copy();
   PVector p2 = m.path.get(p2Index).copy();
@@ -310,6 +312,7 @@ void pruebas(int p1Index, int p2Index)
   stroke(255, 153, 153); 
 }
 
+// Esta funcion comprueba si los puntos ya estan dentro de la array, o si el siguiente o el anterior ya estan dentro.
 boolean isIn(int[] array, int value) {
   for (int i = 0; i < array.length; i++) {
     if (array[i] == value) {
