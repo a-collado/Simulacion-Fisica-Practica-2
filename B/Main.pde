@@ -54,7 +54,7 @@ void draw(){
   strokeWeight(5);
   strokeCap(ROUND);
   for(int i = 0; i < analyticalPath.size(); i = i + 30) { 
-    if (m.location.x > analyticalPath.get(i).x) {
+    if ((angle <= radians(90) && m.location.x >= analyticalPath.get(i).x) || (angle >= radians(90) && m.location.x <= analyticalPath.get(i).x)) {
       point(analyticalPath.get(i).x, screen_height - analyticalPath.get(i).y);
     }
   }
