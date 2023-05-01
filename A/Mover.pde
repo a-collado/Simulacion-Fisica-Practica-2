@@ -10,6 +10,8 @@ class Mover {
 PImage img_satelite;
 PImage img_exploded;
 
+int previousTime = 0;
+
 Mover(float m, float x , float y, PVector initialVel) {
   location = new PVector(x, y);
   velocity = initialVel;
@@ -34,7 +36,14 @@ Mover(float m, float x , float y, PVector initialVel) {
     location.add(velocity);
     acceleration.mult(0);
     if (getPath){
-      path.add(new PVector(location.x, location.y));
+      int currentTime = millis(); // Get the current time in milliseconds
+      int elapsedTime = currentTime - previousTime; // Calculate the elapsed time since the last draw call
+      if (elapsedTime >= 300) { // Check if the elapsed time is greater than or equal to X milliseconds
+        //println(frameRate + "Time elapsed: " + (currentTime - previousTime) + " ms");
+
+        path.add(new PVector(location.x, location.y));
+        previousTime = currentTime; // Update the previous time variable to the current time
+      }
     }
   }
  }
@@ -46,8 +55,8 @@ Mover(float m, float x , float y, PVector initialVel) {
     strokeWeight(5);
     strokeCap(ROUND);
 
-    for(int i = 1; i < path.size(); i = i + 15) { 
-      line(path.get(i-1).x, path.get(i-1).y, path.get(i).x, path.get(i).y);
+    for(int i = 0; i < path.size(); i++) { 
+      point(path.get(i).x, path.get(i).y);
     }
     
    // La imagen del satelite varia en funcion de si hay colision

@@ -41,17 +41,17 @@ void setup(){
     
   initialPos = m.location.copy();
   areas = int(random(2,6)); // Se calculara un numero aleatorio de areas entre 2 y 4.
+  //areas = 1;
   points = new int[areas][2];
   areaTrapecio = new float[areas];
   areaSimpson = new float[areas];
 
-  frameRate(300);         // Aumentamos el framerate para que la orbita se complete antes.
+  frameRate(200);         // Aumentamos el framerate para que la orbita se complete antes.
   
 }
 
 void draw(){
   background(255);
-  println(frameRate);
   
   switch(exercise){
     case 'A': 
@@ -145,12 +145,12 @@ void exerciseC(){
 
       for(int i = 0; i < points.length; i++){
         // Calcular la distancia entre los dos puntos
-        float dist = m.path.get(points[i][1]).dist(m.path.get(points[i][0]));
+        //float dist = m.path.get(points[i][1]).dist(m.path.get(points[i][0]));
         // TODO: Creo que las formulas estan mal. Hay que buscar las formulas correctas.
         
         // Calcular el área usando el método del trapecio
-        areaTrapecio[i] = dist * (m.path.get(points[i][1]).y + m.path.get(points[i][0]).y) / 2;
-        //areaTrapecio[i] = getArea(m.path, a.location, points[i][0], points[i][1]);;
+        //areaTrapecio[i] = dist * (m.path.get(points[i][1]).y + m.path.get(points[i][0]).y) / 2;
+        areaTrapecio[i] = trapezoidArea(points[i][0], points[i][1]);
         
         // Calcular el área usando el método de Simpson
         //areaSimpson[i] = dist / 6 * (m.path.get(points[i][0]).y + 4 * m.path.get((points[i][0] + points[i][1]) / 2).y + m.path.get(points[i][1]).y);
@@ -163,16 +163,19 @@ void exerciseC(){
     
     text("Método del trapecio: ", 10, 40);
     text("Método de Simpson: ", 150, 40);
+    
     for(int i = 0; i < areas; i++){
       // Dibujamos las areas que hemos calculado.
-      for (int e = points[i][0]; e < points[i][1]; e += 50){
+      for (int e = points[i][0]; e < points[i][1]; e ++){
         stroke(255, 153, 153); 
         line(a.location.x, a.location.y, m.path.get(e).x, m.path.get(e).y);
+        point(m.path.get(e).x, m.path.get(e).y);
       }
       line(a.location.x, a.location.y, m.path.get(points[i][1]).x, m.path.get(points[i][1]).y);
-      
-      circle(m.path.get(points[i][0]).x, m.path.get(points[i][0]).y, 10.0f);
-      circle(m.path.get(points[i][1]).x, m.path.get(points[i][1]).y, 10.0f);
+      point( m.path.get(points[i][1]).x, m.path.get(points[i][1]).y);
+
+      //circle(m.path.get(points[i][0]).x, m.path.get(points[i][0]).y, 10.0f);
+      //circle(m.path.get(points[i][1]).x, m.path.get(points[i][1]).y, 10.0f);
 
       // Mostrar los resultados
       text(areaTrapecio[i], 10, 60 + 20 * i);
@@ -206,17 +209,90 @@ float simpsonArea(PVector p1, PVector p2, PVector c, float dx) {
   return sum;
 }
 
-float getArea(ArrayList<PVector> orbitPoints, PVector orbitCenter, int p1Index, int p2Index) {
+float trapezoidArea(int p1Index, int p2Index) {
   float area = 0;
-  for (int i = p1Index; i < p2Index; i++) {
-    PVector p = orbitPoints.get(i);
-    PVector pNext = orbitPoints.get(i+1);
-    float h = p.y - orbitCenter.y;
-    float base1 = p.x - orbitCenter.x;
-    float base2 = pNext.x - orbitCenter.x;
-    area += 0.5 * (base1 + base2) * h;
+  //println(abs(p1Index-p2Index));
+  PVector p1 = m.path.get(p1Index).copy();
+  PVector p2 = m.path.get(p2Index).copy();
+  PVector c = a.location.copy();
+   int secciones = 10;
+
+  PVector[] a = new PVector[secciones+1];
+  a[0] = p1;
+    PVector[] b = new PVector[secciones+1];
+  b[0] = p2;
+  
+  for (int i = 1; i <= secciones; i++) {
+    // Calcular el punto intermedio
+    float t = (float) i / (float) secciones; // Calcular el valor de t
+    a[i] = PVector.lerp(p1, c, t); // Calcular el punto intermedio usando la función lerp
+    // Dibujar el punto
   }
+
+
+  for (int i = 1; i <= secciones; i++) {
+    // Calcular el punto intermedio
+    float t = (float) i / (float) secciones; // Calcular el valor de t
+    b[i] = PVector.lerp(p2, c, t); // Calcular el punto intermedio usando la función lerp
+  }
+  for (int i = 1; i <= secciones; i++) {
+    //float t = a[i-1].dist(a[i])/2;
+    PVector midA = PVector.lerp(a[i-1], a[i], 0.5);
+    //ellipse(midA.x, midA.y, 1, 1);
+    PVector midB = PVector.lerp(b[i-1], b[i], 0.5);
+    //ellipse(midB.x, midB.y, 1, 1);
+    float baseA = a[i-1].dist(a[i]);
+    float baseB = b[i-1].dist(b[i]);
+    float h = midA.dist(midB);
+    area += (baseA + baseB)*h/2;
+  }
+
   return area;
+}
+void pruebas(int p1Index, int p2Index)
+{
+  PVector p1 = m.path.get(p1Index).copy();
+  PVector p2 = m.path.get(p2Index).copy();
+  PVector c = a.location.copy();
+   int secciones = 10;
+   stroke(255, 153, 153); 
+
+  PVector[] a = new PVector[secciones+1];
+  a[0] = p1;
+    PVector[] b = new PVector[secciones+1];
+  b[0] = p2;
+  
+  for (int i = 1; i <= secciones; i++) {
+    // Calcular el punto intermedio
+    float t = (float) i / (float) secciones; // Calcular el valor de t
+    a[i] = PVector.lerp(p1, c, t); // Calcular el punto intermedio usando la función lerp
+    // Dibujar el punto
+    ellipse(a[i-1].x, a[i-1].y, 5, 5);
+  }
+
+
+  for (int i = 1; i <= secciones; i++) {
+    // Calcular el punto intermedio
+    float t = (float) i / (float) secciones; // Calcular el valor de t
+    b[i] = PVector.lerp(p2, c, t); // Calcular el punto intermedio usando la función lerp
+    ellipse(b[i-1].x, b[i-1].y, 5, 5);
+  }
+  stroke(0, 165, 200); 
+  float area = 0;
+  for (int i = 1; i <= secciones; i++) {
+    //float t = a[i-1].dist(a[i])/2;
+    PVector midA = PVector.lerp(a[i-1], a[i], 0.5);
+    //ellipse(midA.x, midA.y, 1, 1);
+    PVector midB = PVector.lerp(b[i-1], b[i], 0.5);
+    //ellipse(midB.x, midB.y, 1, 1);
+    float baseA = a[i-1].dist(a[i]);
+    float baseB = b[i-1].dist(b[i]);
+    float h = midA.dist(midB);
+    area += (baseA + baseB)*h/2;
+    quad(a[i-1].x, a[i-1].y, a[i].x, a[i].y, b[i].x, b[i].y, b[i-1].x, b[i-1].y);
+  }
+  //println(area);
+  stroke(255, 153, 153); 
 }
 
 float distance(PVector p1, PVector p2) {
