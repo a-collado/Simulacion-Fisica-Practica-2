@@ -163,10 +163,14 @@ void exerciseC(){
       // Dibujamos las areas que hemos calculado.
       for (int e = points[i][0]; e < points[i][1]; e ++){
         stroke(255, 153, 153); 
+        strokeWeight(2);
         line(a.location.x, a.location.y, m.path.get(e).x, m.path.get(e).y);
+        strokeWeight(5);
         point(m.path.get(e).x, m.path.get(e).y);
       }
+      strokeWeight(2);
       line(a.location.x, a.location.y, m.path.get(points[i][1]).x, m.path.get(points[i][1]).y);
+      strokeWeight(5);
       point( m.path.get(points[i][1]).x, m.path.get(points[i][1]).y);
 
       // Mostrar los resultados
