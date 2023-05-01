@@ -45,12 +45,13 @@ void setup(){
   areaTrapecio = new float[areas];
   areaSimpson = new float[areas];
 
-  frameRate(600);         // Aumentamos el framerate para que la orbita se complete antes.
+  frameRate(300);         // Aumentamos el framerate para que la orbita se complete antes.
   
 }
 
 void draw(){
   background(255);
+  println(frameRate);
   
   switch(exercise){
     case 'A': 
@@ -149,6 +150,7 @@ void exerciseC(){
         
         // Calcular el área usando el método del trapecio
         areaTrapecio[i] = dist * (m.path.get(points[i][1]).y + m.path.get(points[i][0]).y) / 2;
+        //areaTrapecio[i] = getArea(m.path, a.location, points[i][0], points[i][1]);;
         
         // Calcular el área usando el método de Simpson
         //areaSimpson[i] = dist / 6 * (m.path.get(points[i][0]).y + 4 * m.path.get((points[i][0] + points[i][1]) / 2).y + m.path.get(points[i][1]).y);
@@ -163,20 +165,20 @@ void exerciseC(){
     text("Método de Simpson: ", 150, 40);
     for(int i = 0; i < areas; i++){
       // Dibujamos las areas que hemos calculado.
-      for (int e = points[i][0]; e < points[i][1]; e++){
+      for (int e = points[i][0]; e < points[i][1]; e += 50){
         stroke(255, 153, 153); 
         line(a.location.x, a.location.y, m.path.get(e).x, m.path.get(e).y);
       }
+      line(a.location.x, a.location.y, m.path.get(points[i][1]).x, m.path.get(points[i][1]).y);
       
       circle(m.path.get(points[i][0]).x, m.path.get(points[i][0]).y, 10.0f);
       circle(m.path.get(points[i][1]).x, m.path.get(points[i][1]).y, 10.0f);
-    }
-    
-    for(int i = 0; i < areas; i++){
+
       // Mostrar los resultados
       text(areaTrapecio[i], 10, 60 + 20 * i);
       text(areaSimpson[i], 150, 60 + 20 * i);
     }
+
   }
 }
 
@@ -202,6 +204,19 @@ float simpsonArea(PVector p1, PVector p2, PVector c, float dx) {
     sum += area;
   }
   return sum;
+}
+
+float getArea(ArrayList<PVector> orbitPoints, PVector orbitCenter, int p1Index, int p2Index) {
+  float area = 0;
+  for (int i = p1Index; i < p2Index; i++) {
+    PVector p = orbitPoints.get(i);
+    PVector pNext = orbitPoints.get(i+1);
+    float h = p.y - orbitCenter.y;
+    float base1 = p.x - orbitCenter.x;
+    float base2 = pNext.x - orbitCenter.x;
+    area += 0.5 * (base1 + base2) * h;
+  }
+  return area;
 }
 
 float distance(PVector p1, PVector p2) {

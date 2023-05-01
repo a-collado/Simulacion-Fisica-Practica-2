@@ -3,12 +3,15 @@ class Attractor {
   float radius;
   PVector location;
   float G;
+
+  PImage img;
   
   Attractor(float m) {
     location = new PVector(width/2,height/2);
     mass = m;
     radius = mass*2;
     G = 0.4;
+    img = loadImage("tierra.png");
   }
   
   PVector attract(Mover m) {
@@ -29,8 +32,6 @@ class Attractor {
     circle(location.x,location.y,radius);*/
    
    // Imagen tierra
-     PImage img;
-     img = loadImage("tierra.png");
      image(img, location.x - 25, location.y - 24, mass*2, mass*2);
   }
 }

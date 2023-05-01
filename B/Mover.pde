@@ -26,7 +26,7 @@ Mover(float m, float x , float y, PVector initialVel) {
  void display() {
      stroke(0);
      fill(175);
-     ellipse(location.x + 10,location.y - 30,mass*16,mass*16);    
+     ellipse(location.x ,location.y ,mass*16,mass*16);    
   }
   
 }

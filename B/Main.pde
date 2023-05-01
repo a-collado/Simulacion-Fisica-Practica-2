@@ -18,13 +18,13 @@ void setup(){
   size(640,360);
   // Inicializamos el mover con los valores que hemos designado.
   m = new Mover(mass, x, y, new PVector(v0x, -v0y));    // La vy0 la invertimos para que la velocidad apunte hacia arriba en Processing
-  frameRate(20);         // Relentizamos el framerate para poder ver bien el lanzamiento.
+  frameRate(1);         // Relentizamos el framerate para poder ver bien el lanzamiento.
 
   // Solucion analítica
   for (float t = 0; t <= tMax; t += dt) {
     // Utilizamos la formula del desplazamiento para calcular la posicion en cada momento del tiempo
-    float x_analityc = x + v0 * cos(angle) * t;
-    float y_analityc = (screen_height - y) + v0 * sin(angle) * t - g/2 * pow(t, 2);   // Restamos screen height - y porque en el sistema de coordenadas que usa processing, el punto más alto de la pantalla es el 0.
+    float x_analityc = x-10 + v0 * cos(angle) * t;
+    float y_analityc = (screen_height - y)-30 + v0 * sin(angle) * t - g/2 * pow(t, 2);   // Restamos screen height - y porque en el sistema de coordenadas que usa processing, el punto más alto de la pantalla es el 0.
     analyticalPath.add(new PVector(x_analityc, y_analityc));
   }
 
@@ -37,7 +37,7 @@ void draw(){
   // Simulación numérica
 
   // Calcular nueva posición y velocidad
-  
+  strokeWeight(1);
   PVector fuerza_acelaracion = new PVector(0, g).mult(m.mass);  // Calculamos la fuerza de la aceleracion.
   m.applyForce(fuerza_acelaracion);                             // Usamos la segunda ley de Newton para calcular la acelaracion en la funcion applyForce.
   m.update();                                     // El calculo de la velocidad utilizando la aceleracion se esta haciendo en la funcion update del Mover.     
