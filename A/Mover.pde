@@ -28,21 +28,21 @@ Mover(float m, float x , float y, PVector initialVel) {
  }
 
  void update() {
-  /*velocity.add(acceleration);
-  location.add(velocity);
-  acceleration.mult(0);*/
+
   if(!exploded) { // Movimiento mientras no explote y Cada frame añadimos la localizacion actual a una lista
     velocity.add(acceleration);
     location.add(velocity);
     acceleration.mult(0);
+
     if (getPath){
-      int currentTime = millis(); // Get the current time in milliseconds
-      int elapsedTime = currentTime - previousTime; // Calculate the elapsed time since the last draw call
-      if (elapsedTime >= 300) { // Check if the elapsed time is greater than or equal to X milliseconds
+      // Nos aseguramos de que todos los puntos estan separados 300 milisegundos entre si.
+      int currentTime = millis(); 
+      int elapsedTime = currentTime - previousTime;
+      if (elapsedTime >= 300) {
         //println(frameRate + "Time elapsed: " + (currentTime - previousTime) + " ms");
 
         path.add(new PVector(location.x, location.y));
-        previousTime = currentTime; // Update the previous time variable to the current time
+        previousTime = currentTime; 
       }
     }
   }
